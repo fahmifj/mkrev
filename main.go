@@ -16,26 +16,20 @@ const (
 	ruby       string = "rb"
 )
 
-var intfc string = "eth0"
-var port string = "9001"
-var shell string = bash
-
 func main() {
 
-	if len(os.Args) > 3 {
+	if len(os.Args) > 2 {
 		intfc := os.Args[1]
-		port := os.Args[2]
-		shell := os.Args[3]
-		crafted, err := generateRShell(intfc, port, shell)
+		shell := os.Args[2]
+		crafted, err := generateRShell(intfc, "9000", shell)
 		if err != nil {
 			os.Exit(1)
 		}
 		fmt.Println(crafted)
 		return
 	}
-
-	fmt.Printf("[-] Usage:\tmkrev [interface] [port] [language]\n")
-	fmt.Printf("[-] Example:\tmkrev tun0 9000 py\n")
+	fmt.Printf("[-] Usage:\tmkrev [interface] [language]\n")
+	fmt.Printf("[-] Example:\tmkrev tun0 py\n")
 	fmt.Printf("[-] Language:\tpy, bash, nc, php, ps, pl, rb \n")
 }
 

